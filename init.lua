@@ -20,6 +20,20 @@ minetest.register_craft({
     }
 })
 
+minetest.register_node("wildkratts:disc_machine", {
+    description = S("Disc Machine"),
+    tiles = {
+        "wildkratts_disc_machine_back.png"
+    }
+})
+minetest.register_craft({
+    output = "wildkratts:disc_machine",
+    recipe = {
+        {"", "", "vessels:glass_fragments"},
+        {"", "vessels:glass_fragments", ""},
+        {"default:diamond", "", ""},
+    }
+})
 petz.on_rightclick = function(self, clicker)
     local wielded_item = clicker:get_wielded_item()
     local wielded_item_name = wielded_item:get_name()
