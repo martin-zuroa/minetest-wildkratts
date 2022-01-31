@@ -10,6 +10,12 @@ minetest.register_craftitem("wildkratts:syringe_dna", {
     wield_image = "wildkratts_syringe_dna.png",
 })
 
+minetest.register_craftitem("wildkratts:disc_dna", {
+    description = S("Kratts DNA Disc"),
+    inventory_image = "wildkratts_disc_dna.png",
+    wield_image = "wildkratts_disc_dna.png",
+})
+
 minetest.register_craft({
     type = "shaped",
     output = "wildkratts:syringe",
@@ -29,12 +35,26 @@ local disc_machine_fs = "size[8,7]"
     .."label[2.0,1;DNA]"
     .."label[5.1,1;Disc]"
 
+
+local function update_formspec(progress, goal, meta)
+    local formspec
+  
+    if progress > 0 and progress <= goal then
+        local item_percent = math.floor(progress / goal * 100)
+        --formspec = get_active_disc_machine_fs(item_percent)
+        formspec = disc_machine_fs
+    else
+        formspec = disc_machine_fs
+    end
+    meta:set_string("formspec", formspec)
+end
+    
 local function recalculate(pos)
 	local meta, timer = minetest.get_meta(pos), minetest.get_node_timer(pos)
 	local inv = meta:get_inventory()
 	local stack = inv:get_stack("input", 1)
 
-	local k = dna_cultivator.recipes[stack:get_name()]
+	local k = "wildkratts:disc_dna"
 	if not k then return end
 
 	timer:stop()
@@ -102,7 +122,7 @@ minetest.register_node("wildkratts:disc_machine", {
 	end,
 
 	allow_metadata_inventory_put = function(pos, list, index, stack, player)
-		return disc_machine.recipes[stack:get_name()] and stack:get_count() or 0
+		return 1
 	end,
 })
 
