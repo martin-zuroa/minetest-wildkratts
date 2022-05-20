@@ -35,6 +35,18 @@ local disc_machine_fs = "size[8,7]"
    .."label[2.0,1;DNA]"
    .."label[5.1,1;Disc]"
 
+local function get_active_disc_machine_fs(item_percent)
+   return "size[8,7]"
+      .."image[3.28,1.75;1.5,.5;wildkratts_progress_bar.png^[lowpart:"
+      ..(item_percent)..":wildkratts_progress_bar_full.png^[transformR270]"
+      .."list[current_player;main;0,3;8,4;]"
+      .."list[context;input;2,1.5;1,1;]"
+      .."list[context;output;5,1.5;1,1;]"
+      .."label[3,0.5;Disc Machine]"
+      .."label[2.0,1;DNA]"
+      .."label[5.1,1;Disc]"
+end
+
 local function update_formspec(progress, goal, meta)
    local formspec
 
@@ -53,12 +65,20 @@ local function recalculate(pos)
    local inv = meta:get_inventory()
    local stack = inv:get_stack("input", 1)
 
-   local k = "wildkratts:disc_dna"
-   if not k then return end
-
    timer:stop()
    update_formspec(0, 3, meta)
    timer:start(1)
+end
+
+local function do_cook_single(pos)
+   local meta = minetest.get_meta(pos)
+   local inv = meta:get_inventory()
+   local dna = inv:get_stack("input", 1)
+   dna:set_count(1)
+
+   inv:remove_item("input", dna)
+   --local dinosaur_egg = fossil_analyzer.recipes[fossil:get_name()]
+   inv:add_item("output", dna)
 end
 
 minetest.register_node("wildkratts:disc_machine", {
@@ -85,6 +105,8 @@ minetest.register_node("wildkratts:disc_machine", {
 			     cooking_time = cooking_time + 1
 
 			     if cooking_time % 100 == 0 then
+				meta:set_int("cooking_time", 0)
+				update_formspec(0, 3, meta)
 				do_cook_single(pos)
 			     end
 
